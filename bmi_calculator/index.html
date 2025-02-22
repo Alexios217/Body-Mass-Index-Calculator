@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI Calculator</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to right, #2c2c2c, #444);
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(255, 255, 255, 0.2);
+            text-align: center;
+            color: white;
+            width: 300px;
+        }
+        input, button {
+            width: 90%;
+            margin: 10px 0;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+        input {
+            background: #666;
+            color: white;
+        }
+        button {
+            background: white;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>BODY MASS INDEX CALCULATOR</h2>
+        <input type="text" id="name" placeholder="Enter Your Name">
+        <input type="text" id="gender" placeholder="Enter Your Gender">
+        <input type="email" id="email" placeholder="Enter Your Email">
+        <input type="number" id="age" placeholder="Enter Your Age">
+        <input type="number" id="weight" placeholder="Enter Your Weight (kg)">
+        <input type="number" id="height" placeholder="Enter Your Height (m)">
+        <button onclick="calculateBMI()">CALCULATE</button>
+        <p id="loading" style="display: none; color: yellow;">Calculating...</p>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        function calculateBMI() {
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value);
+            const age = parseInt(document.getElementById('age').value);
+            const loadingText = document.getElementById('loading');
+            const resultText = document.getElementById('result');
+
+            if (isNaN(weight) || isNaN(height) || isNaN(age)) {
+                resultText.innerText = 'Please fill all fields with valid numbers.';
+                return;
+            }
+            if (weight <= 0 || height <= 0 || age <= 0) {
+                resultText.innerText = 'Values must be greater than zero.';
+                return;
+            }
+            if (height > 3) {
+                resultText.innerText = 'Height seems unrealistic. Please enter a valid value.';
+                return;
+            }
+
+            // Show loading text
+            loadingText.style.display = 'block';
+            resultText.innerText = '';
+
+            fetch(`http://127.0.0.1:8000/bmi/calculate/?weight=${weight}&height=${height}&age=${age}`)
+                .then(response => response.json())
+                .then(data => {
+                    loadingText.style.display = 'none'; // Hide loading text
+                    if (data.error) {
+                        resultText.innerText = data.error;
+                    } else {
+                        resultText.innerText = 
+                            `Your BMI is ${data.bmi}. Category: ${data.weight_category} (${data.age_category}).`;
+                    }
+                })
+                .catch(error => {
+                    loadingText.style.display = 'none';
+                    resultText.innerText = 'Error fetching BMI data.';
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        canvas { max-width: 600px; margin: 20px auto; }
+    </style>
+</head>
+<body>
+    <h2>BMI Data Analytics</h2>
+    <canvas id="bmiChart"></canvas>
+    
+    <script>
+        fetch('/bmi/data/')
+        .then(response => response.json())
+        .then(data => {
+            const labels = data.dates;
+            const bmiValues = data.bmis;
+            
+            new Chart(document.getElementById('bmiChart'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'BMI Trend',
+                        data: bmiValues,
+                        borderColor: 'blue',
+                        fill: false
+                    }]
+                }
+            });
+        });
+    </script>
+</body>
+</html>
